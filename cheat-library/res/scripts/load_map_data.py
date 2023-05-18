@@ -5,7 +5,7 @@ import re
 # Reading api
 with open("map_api.txt", "r") as map_api_file:
     api_list = []
-    for line in map_api_file.readlines():
+    for line in map_api_file:
         name, address = line.split()
         api_list.append((name, address))
 
@@ -25,10 +25,7 @@ for (name, message) in points_messages:
     label_list = message["data"]["label_list"]
     point_list = message["data"]["point_list"]
 
-    label_map = {}
-    for label in label_list:
-        label_map[label["id"]] = label
-
+    label_map = {label["id"]: label for label in label_list}
     data = {}
     for point in point_list:
         label_id = point["label_id"]
@@ -67,16 +64,14 @@ for (name, address) in api_list:
 for (name, message) in categories_messages:
     categories_list = message["data"]["tree"]
 
-    data = []
-    for category in categories_list:
-        data.append(
-            {
-                "id": category["id"],
-                "name": category["name"],
-                "children": [child["id"] for child in category["children"]]
-            }
-        )
-
+    data = [
+        {
+            "id": category["id"],
+            "name": category["name"],
+            "children": [child["id"] for child in category["children"]],
+        }
+        for category in categories_list
+    ]
     refactored_data[name]["categories"] = data
 
 # Writing refactored data to json files
